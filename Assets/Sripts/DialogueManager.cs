@@ -58,13 +58,15 @@ public class DialogueManager : MonoBehaviour
         ShowLine();
     }
 
-    //Toto restartuje manager vypne dialog a připravího na další použití
+    //Toto restartuje manager vypne dialog a teleportuje hráče dále pokud v dialogu je funkce OnDialogue End
     private void EndDialogue()
     {
         isActive = false;
         DialogueName.text = "";
         DialogueText.text = "";
         DialogPanel.SetActive(false);
+
+        OnDialogueEnd();
     }
     
 }

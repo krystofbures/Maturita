@@ -2,10 +2,12 @@ using UnityEngine;
 
 public class ProfessorDialogue : MonoBehaviour
 {
-    public DialogueManager dialogueManager; //Propojí dialogový manager misto odkud se řídí celé dialogové UI s timto custom dialogem pro NPC a hrače 
-    public GameObject ExclamationMark; //Přídává otazník nad postavmi když se s nimi dá interagovat
+    public DialogueManager dialogueManager; // propojení s UI managerem
+    public GameObject ExclamationMark;      // vykřičník nad NPC
+    public Transform player;                // hráč
+    public Transform teleportTarget;        // místo teleportu
 
-    private (string speaker, string line)[] npcDialogue = new (string, string)[] //Speaker - Jmeno postavy Line - Co ta postav říka 
+    private (string speaker, string line)[] npcDialogue = new (string, string)[]
     {
         ("Profesor", "Ahoj Rousi konečně...konečně..."),
         ("Profesor", "JSEM TO DOKÁZAL!!!"),
@@ -28,7 +30,7 @@ public class ProfessorDialogue : MonoBehaviour
         ("Profesor", "Takže chápeš jak se to ovládá?"),
         ("Rous", "No nějak tomu ovládání rotumím"),
         ("Profesor", "Nastavil jsme posun před tím než se to stalo"),
-        ("Profesor", "Než se stala ta katastrova a zjevil se JEV"),
+        ("Profesor", "Než se stala ta katastrofa a zjevil se JEV"),
         ("Profesor", "Takže do roku 3595"),
         ("Profesor", "Výborně...tak začneme"),
         ("Profesor", "Až to odpočítam stikní tlačítko a posuň se v čase"),
@@ -38,18 +40,19 @@ public class ProfessorDialogue : MonoBehaviour
         ("Profesor", "Teď!")
     };
 
-    private bool dialogRange = false; //Tato proměnná pomoci bool nastavuje to že když player není v NPC colideru tak s nim nemuže mluvit
+    private bool dialogRange = false; // hráč v dosahu NPC
 
     void Start()
     {
-        ExclamationMark.SetActive(false); //Toto udělá to že když se hra zapne tak vykřičník nepujde vidět
+        ExclamationMark.SetActive(false); // skryj vykřičník
     }
+
     void Update()
     {
         if (dialogRange && Input.GetKeyDown(KeyCode.E))
         {
-            ExclamationMark.SetActive(false);
-            dialogueManager.StartDialogue(npcDialogue);
+            ExclamationMark.SetActive(false); // schovej vykřičník při startu dialogu
+            dialogueManager.StartDialogue(npcDialogue, OnDialogueEnd); // start dialogu + callback
         }
     }
 
@@ -58,8 +61,8 @@ public class ProfessorDialogue : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             dialogRange = true;
+            ExclamationMark.SetActive(true); // zobraz vykřičník
             Debug.Log("Stiskni E pro rozhovor");
-            ExclamationMark.SetActive(true);
         }
     }
 
@@ -68,7 +71,14 @@ public class ProfessorDialogue : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             dialogRange = false;
-            ExclamationMark.SetActive(false);
+            ExclamationMark.SetActive(false); // schovej vykřičník
         }
     }
+
+    // teleport po konci dialogu
+    public void OnDialogueEnd()
+    {
+        player.position = teleportTarget.position;
+    }
+
 }
